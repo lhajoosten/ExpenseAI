@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  api:
+    image: expenseai-api:latest
+    container_name: expenseai-api
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=db;Database=ExpenseAI;User=sa;Password=${SA_PASSWORD}
+      - ConnectionStrings__Redis=redis:6379
+      - AI__OpenAI__ApiKey=${OPENAI_API_KEY}
+      - AI__Azure__CognitiveServicesKey=${AZURE_COG_KEY}
+      - AI__Azure__CognitiveServicesEndpoint=${AZURE_COG_ENDPOINT}
+      - JWT__Key=${JWT_KEY}
+      - JWT__Issuer=ExpenseAI
+      - JWT__Audience=ExpenseAI-Users
+      # Add any other required environment variables
+    ports:
+      - "5000:80"
+    depends_on:
+      - db
+      - redis
+
+  web:
+    image: expenseai-web:latest
+    container_name: expenseai-web
+    restart: always
+    environment:
+      - NODE_ENV=production
+      # Add any frontend environment variables if needed
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: expenseai-db
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - expenseai-db-data:/var/opt/mssql
+
+  redis:
+    image: redis:7-alpine
+    container_name: expenseai-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - expenseai-redis-data:/data
+
+volumes:
+  expenseai-db-data:
+  expenseai-redis-data:

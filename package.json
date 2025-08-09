@@ -1,0 +1,25 @@
+{
+  "name": "expense-ai-platform",
+  "version": "1.0.0",
+  "description": "AI-powered expense management platform",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "cd src/backend && dotnet run --project ExpenseAI.Api",
+    "dev:web": "cd src/frontend && ng serve",
+    "build": "npm run build:api && npm run build:web",
+    "build:api": "cd src/backend && dotnet build",
+    "build:web": "cd src/frontend && ng build",
+    "test": "npm run test:api && npm run test:web",
+    "test:api": "cd src/backend && dotnet test",
+    "test:web": "cd src/frontend && npm test",
+    "docker:dev": "docker-compose -f docker/docker-compose.dev.yml up",
+    "docker:prod": "docker-compose -f docker/docker-compose.prod.yml up",
+    "setup": "node scripts/setup-dev.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "src/frontend"
+  ]
+}

@@ -1,0 +1,27 @@
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy csproj files and restore
+COPY src/backend/*.sln ./
+COPY src/backend/ExpenseAI.Api/*.csproj ./ExpenseAI.Api/
+COPY src/backend/ExpenseAI.Application/*.csproj ./ExpenseAI.Application/
+COPY src/backend/ExpenseAI.Domain/*.csproj ./ExpenseAI.Domain/
+COPY src/backend/ExpenseAI.Infrastructure/*.csproj ./ExpenseAI.Infrastructure/
+COPY src/shared/ExpenseAI.Contracts/*.csproj ./ExpenseAI.Contracts/
+
+RUN dotnet restore
+
+# Copy source and build
+COPY src/backend/ ./
+COPY src/shared/ ./
+RUN dotnet build -c Release --no-restore
+RUN dotnet publish ExpenseAI.Api -c Release -o /app --no-build
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+WORKDIR /app
+COPY --from=build /app .
+EXPOSE 80
+EXPOSE 443
+ENTRYPOINT ["dotnet", "ExpenseAI.Api.dll"]

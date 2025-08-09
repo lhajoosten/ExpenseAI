@@ -1,0 +1,62 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Azure Container Registry Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Push API image to ACR
+        run: |
+          docker tag expenseai-api:latest ${{ secrets.ACR_LOGIN_SERVER }}/expenseai-api:latest
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/expenseai-api:latest
+
+      - name: Push Web image to ACR
+        run: |
+          docker tag expenseai-web:latest ${{ secrets.ACR_LOGIN_SERVER }}/expenseai-web:latest
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/expenseai-web:latest
+
+      - name: Deploy to Azure Container Instances
+        run: |
+          az container create \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name expenseai-api \
+            --image ${{ secrets.ACR_LOGIN_SERVER }}/expenseai-api:latest \
+            --cpu 2 --memory 4 \
+            --environment-variables \
+              ASPNETCORE_ENVIRONMENT=Production \
+              ConnectionStrings__DefaultConnection=${{ secrets.DB_CONNECTION_STRING }} \
+              ConnectionStrings__Redis=${{ secrets.REDIS_CONNECTION_STRING }} \
+              JWT__Key=${{ secrets.JWT_KEY }} \
+              JWT__Issuer=ExpenseAI \
+              JWT__Audience=ExpenseAI-Users \
+              AI__OpenAI__ApiKey=${{ secrets.OPENAI_API_KEY }} \
+              AI__Azure__CognitiveServicesKey=${{ secrets.AZURE_COG_KEY }} \
+              AI__Azure__CognitiveServicesEndpoint=${{ secrets.AZURE_COG_ENDPOINT }}
+
+          az container create \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name expenseai-web \
+            --image ${{ secrets.ACR_LOGIN_SERVER }}/expenseai-web:latest \
+            --cpu 1 --memory 2 \
+            --environment-variables NODE_ENV=production
+

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: expenseai-db
+spec:
+  serviceName: "expenseai-db"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expenseai-db
+  template:
+    metadata:
+      labels:
+        app: expenseai-db
+    spec:
+      containers:
+        - name: db
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          ports:
+            - containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: expenseai-secrets
+                  key: sa-password
+          volumeMounts:
+            - name: mssqldb
+              mountPath: /var/opt/mssql
+  volumeClaimTemplates:
+    - metadata:
+        name: mssqldb
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expenseai-db
+spec:
+  ports:
+    - port: 1433
+      targetPort: 1433
+  clusterIP: None
+  selector:
+    app: expenseai-db
