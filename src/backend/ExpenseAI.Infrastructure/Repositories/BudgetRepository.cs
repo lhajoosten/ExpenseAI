@@ -20,9 +20,9 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
     /// </summary>
     public async Task<IReadOnlyList<Budget>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         return await _dbSet
-            .Where(b => b.UserId == userIdString)
+            .Where(b => b.UserId == userId)
             .OrderBy(b => b.StartDate)
             .ToListAsync(cancellationToken);
     }
@@ -32,9 +32,9 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
     /// </summary>
     public async Task<IReadOnlyList<Budget>> GetActiveByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         return await _dbSet
-            .Where(b => b.UserId == userIdString && b.IsActive)
+            .Where(b => b.UserId == userId && b.IsActive)
             .OrderBy(b => b.StartDate)
             .ToListAsync(cancellationToken);
     }
@@ -47,9 +47,9 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         string category,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         return await _dbSet
-            .Where(b => b.UserId == userIdString && b.Category == category)
+            .Where(b => b.UserId == userId && b.Category == category)
             .OrderBy(b => b.StartDate)
             .ToListAsync(cancellationToken);
     }
@@ -62,9 +62,9 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         string category,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         return await _dbSet
-            .FirstOrDefaultAsync(b => b.UserId == userIdString && b.Category == category, cancellationToken);
+            .FirstOrDefaultAsync(b => b.UserId == userId && b.Category == category, cancellationToken);
     }
 
     /// <summary>
@@ -75,9 +75,9 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         BudgetPeriod period,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         return await _dbSet
-            .Where(b => b.UserId == userIdString && b.Period == period)
+            .Where(b => b.UserId == userId && b.Period == period)
             .OrderBy(b => b.StartDate)
             .ToListAsync(cancellationToken);
     }
@@ -91,9 +91,9 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         DateTime endDate,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         return await _dbSet
-            .Where(b => b.UserId == userIdString &&
+            .Where(b => b.UserId == userId &&
                        b.StartDate <= endDate &&
                        b.EndDate >= startDate)
             .OrderBy(b => b.StartDate)
@@ -107,11 +107,11 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         var currentDate = DateTime.UtcNow;
 
         return await _dbSet
-            .Where(b => b.UserId == userIdString &&
+            .Where(b => b.UserId == userId &&
                        b.IsActive &&
                        b.StartDate <= currentDate &&
                        b.EndDate >= currentDate)
@@ -130,9 +130,9 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         if (string.IsNullOrWhiteSpace(name))
             return null;
 
-        var userIdString = userId.ToString();
+
         return await _dbSet
-            .FirstOrDefaultAsync(b => b.UserId == userIdString && b.Name.ToLower() == name.ToLower(), cancellationToken);
+            .FirstOrDefaultAsync(b => b.UserId == userId && b.Name.ToLower() == name.ToLower(), cancellationToken);
     }
 
     /// <summary>
@@ -147,8 +147,8 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         if (string.IsNullOrWhiteSpace(name))
             return false;
 
-        var userIdString = userId.ToString();
-        var query = _dbSet.Where(b => b.UserId == userIdString && b.Name.ToLower() == name.ToLower());
+
+        var query = _dbSet.Where(b => b.UserId == userId && b.Name.ToLower() == name.ToLower());
 
         if (excludeId.HasValue)
         {
@@ -165,11 +165,11 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         // This would require joining with expenses to calculate spent amounts
         // For now, return budgets that have alert thresholds set
         return await _dbSet
-            .Where(b => b.UserId == userIdString &&
+            .Where(b => b.UserId == userId &&
                        b.IsActive &&
                        b.AlertThreshold > 0)
             .OrderBy(b => b.StartDate)
@@ -200,9 +200,9 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         var budgets = await _dbSet
-            .Where(b => b.UserId == userIdString && b.IsActive)
+            .Where(b => b.UserId == userId && b.IsActive)
             .Select(b => b.Amount)
             .ToListAsync(cancellationToken);
 
@@ -217,5 +217,33 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
 
         // For simplicity, return the first currency group or convert to USD
         return groupedByCurrency.FirstOrDefault() ?? Money.Zero("USD");
+    }
+
+    /// <summary>
+    /// Get all active budgets (used by GetActiveBudgets query)
+    /// </summary>
+    public async Task<IReadOnlyList<Budget>> GetActiveBudgetsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(b => b.IsActive)
+            .OrderBy(b => b.StartDate)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Get budgets by date range
+    /// </summary>
+    public async Task<IReadOnlyList<Budget>> GetBudgetsByDateRangeAsync(
+        Guid userId,
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(b => b.UserId == userId &&
+                       b.StartDate >= startDate &&
+                       b.EndDate <= endDate)
+            .OrderBy(b => b.StartDate)
+            .ToListAsync(cancellationToken);
     }
 }

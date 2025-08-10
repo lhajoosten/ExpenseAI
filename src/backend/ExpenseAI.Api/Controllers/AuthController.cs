@@ -15,14 +15,14 @@ namespace ExpenseAI.Api.Controllers;
 [Route("api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ExpenseAIIdentityUser> _userManager;
+    private readonly SignInManager<ExpenseAIIdentityUser> _signInManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
+        UserManager<ExpenseAIIdentityUser> userManager,
+        SignInManager<ExpenseAIIdentityUser> signInManager,
         IConfiguration configuration,
         ILogger<AuthController> logger)
     {
@@ -69,7 +69,7 @@ public class AuthController : ControllerBase
             RefreshToken = refreshToken,
             User = new UserDto
             {
-                Id = user.Id,
+                Id = user.Id.ToString(),
                 Email = user.Email!,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -95,7 +95,7 @@ public class AuthController : ControllerBase
             return BadRequest("User with this email already exists");
         }
 
-        var user = new ApplicationUser
+        var user = new ExpenseAIIdentityUser
         {
             UserName = request.Email,
             Email = request.Email,
@@ -126,7 +126,7 @@ public class AuthController : ControllerBase
             RefreshToken = refreshToken,
             User = new UserDto
             {
-                Id = user.Id,
+                Id = user.Id.ToString(),
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -167,7 +167,7 @@ public class AuthController : ControllerBase
             RefreshToken = newRefreshToken,
             User = new UserDto
             {
-                Id = user.Id,
+                Id = user.Id.ToString(),
                 Email = user.Email!,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -213,7 +213,7 @@ public class AuthController : ControllerBase
 
         return Ok(new UserDto
         {
-            Id = user.Id,
+            Id = user.Id.ToString(),
             Email = user.Email!,
             FirstName = user.FirstName,
             LastName = user.LastName,
@@ -221,11 +221,11 @@ public class AuthController : ControllerBase
         });
     }
 
-    private async Task<string> GenerateJwtToken(ApplicationUser user)
+    private async Task<string> GenerateJwtToken(ExpenseAIIdentityUser user)
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email!),
             new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
             new("jti", Guid.NewGuid().ToString())

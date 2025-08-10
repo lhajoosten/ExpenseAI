@@ -60,12 +60,12 @@ public class Budget
     /// <summary>
     /// User who owns this budget
     /// </summary>
-    public string UserId { get; set; } = string.Empty;
+    public Guid UserId { get; set; }
 
     /// <summary>
     /// Navigation property to the user
     /// </summary>
-    public virtual ApplicationUser User { get; set; } = null!;
+    public virtual ExpenseAIIdentityUser User { get; set; } = null!;
 
     /// <summary>
     /// Budget creation date
@@ -116,7 +116,7 @@ public class Budget
             Period = recurrencePattern,
             StartDate = startDate,
             EndDate = endDate,
-            UserId = userId.ToString(),
+            UserId = userId,
             AlertThreshold = 80m,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -202,6 +202,53 @@ public class Budget
     {
         IsActive = false;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Check if this budget is recurring
+    /// </summary>
+    public bool IsRecurring => Period != BudgetPeriod.Monthly; // For simplicity, consider non-monthly as recurring
+
+    /// <summary>
+    /// Get the recurrence pattern (same as Period for now)
+    /// </summary>
+    public BudgetPeriod RecurrencePattern => Period;
+
+    /// <summary>
+    /// Calculate spent amount (placeholder - would need expenses in real implementation)
+    /// </summary>
+    public decimal GetSpentAmount()
+    {
+        // This would typically calculate from related expenses
+        // For now returning 0 as placeholder
+        return 0m;
+    }
+
+    /// <summary>
+    /// Calculate remaining amount
+    /// </summary>
+    public decimal GetRemainingAmount()
+    {
+        var spent = GetSpentAmount();
+        return Math.Max(0, Amount.Amount - spent);
+    }
+
+    /// <summary>
+    /// Calculate percentage of budget used
+    /// </summary>
+    public decimal GetPercentageUsed()
+    {
+        if (Amount.Amount == 0) return 0;
+        var spent = GetSpentAmount();
+        return Math.Min(100, (spent / Amount.Amount) * 100);
+    }
+
+    /// <summary>
+    /// Check if budget is over the allocated amount
+    /// </summary>
+    public bool IsOverBudget()
+    {
+        return GetSpentAmount() > Amount.Amount;
     }
 }
 

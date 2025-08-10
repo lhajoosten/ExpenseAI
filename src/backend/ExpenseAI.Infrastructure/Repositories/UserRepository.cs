@@ -8,7 +8,7 @@ namespace ExpenseAI.Infrastructure.Repositories;
 /// <summary>
 /// Repository implementation for user operations
 /// </summary>
-public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
+public class UserRepository : BaseRepository<ExpenseAIIdentityUser>, IUserRepository
 {
     public UserRepository(ApplicationDbContext context) : base(context)
     {
@@ -17,7 +17,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// <summary>
     /// Get user by email
     /// </summary>
-    public async Task<ApplicationUser?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    public async Task<ExpenseAIIdentityUser?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(email))
             return null;
@@ -29,7 +29,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// <summary>
     /// Get user by username
     /// </summary>
-    public async Task<ApplicationUser?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
+    public async Task<ExpenseAIIdentityUser?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(username))
             return null;
@@ -50,8 +50,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
 
         if (excludeId.HasValue)
         {
-            var excludeIdString = excludeId.Value.ToString();
-            query = query.Where(u => u.Id != excludeIdString);
+            query = query.Where(u => u.Id != excludeId.Value);
         }
 
         return await query.AnyAsync(cancellationToken);
@@ -69,8 +68,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
 
         if (excludeId.HasValue)
         {
-            var excludeIdString = excludeId.Value.ToString();
-            query = query.Where(u => u.Id != excludeIdString);
+            query = query.Where(u => u.Id != excludeId.Value);
         }
 
         return await query.AnyAsync(cancellationToken);
@@ -79,7 +77,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// <summary>
     /// Get active users
     /// </summary>
-    public async Task<IReadOnlyList<ApplicationUser>> GetActiveUsersAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ExpenseAIIdentityUser>> GetActiveUsersAsync(CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .Where(u => u.IsActive)
@@ -91,7 +89,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// <summary>
     /// Get users by creation date range
     /// </summary>
-    public async Task<IReadOnlyList<ApplicationUser>> GetByCreationDateRangeAsync(
+    public async Task<IReadOnlyList<ExpenseAIIdentityUser>> GetByCreationDateRangeAsync(
         DateTime startDate,
         DateTime endDate,
         CancellationToken cancellationToken = default)
@@ -105,7 +103,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// <summary>
     /// Search users by name or email
     /// </summary>
-    public async Task<IReadOnlyList<ApplicationUser>> SearchAsync(
+    public async Task<IReadOnlyList<ExpenseAIIdentityUser>> SearchAsync(
         string searchTerm,
         CancellationToken cancellationToken = default)
     {
@@ -127,7 +125,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// <summary>
     /// Get users with recent activity
     /// </summary>
-    public async Task<IReadOnlyList<ApplicationUser>> GetRecentlyActiveAsync(
+    public async Task<IReadOnlyList<ExpenseAIIdentityUser>> GetRecentlyActiveAsync(
         int days = 30,
         CancellationToken cancellationToken = default)
     {
@@ -146,9 +144,9 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// </summary>
     public async Task UpdateLastLoginAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         var user = await _dbSet
-            .FirstOrDefaultAsync(u => u.Id == userIdString, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user != null)
         {
@@ -166,9 +164,9 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
         DateTime expiryTime,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         var user = await _dbSet
-            .FirstOrDefaultAsync(u => u.Id == userIdString, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user != null)
         {
@@ -183,9 +181,9 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// </summary>
     public async Task ClearRefreshTokenAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var userIdString = userId.ToString();
+
         var user = await _dbSet
-            .FirstOrDefaultAsync(u => u.Id == userIdString, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user != null)
         {
@@ -198,7 +196,7 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     /// <summary>
     /// Get user by refresh token
     /// </summary>
-    public async Task<ApplicationUser?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    public async Task<ExpenseAIIdentityUser?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(refreshToken))
             return null;

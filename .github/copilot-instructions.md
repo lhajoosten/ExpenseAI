@@ -52,7 +52,7 @@ Queries/
 - Use async/await with ConfigureAwait(false) in libraries
 - Identity Framework with JWT for auth
 - FluentValidation for input validation
-- AutoMapper/Mapster for object mapping
+- AutoMapper for object mapping
 - Result pattern for error handling over exceptions
 - Global exception middleware with structured logging
 - IMemoryCache local, Redis distributed caching
@@ -115,7 +115,6 @@ Queries/
 - **Controllers**: Focused on single aggregate or bounded context
 
 ## Performance & DevOps
-- Response compression (Gzip, Brotli)
 - Docker multi-stage builds
 - Environment-specific appsettings
 - Health checks for monitoring
@@ -124,6 +123,6 @@ Queries/
 
 ## Documentation
 - XML docs for public APIs
-- Swagger/OpenAPI with examples
+- Swagger with examples
 - DTOs with proper documentation
 - Clear error messages and user feedback

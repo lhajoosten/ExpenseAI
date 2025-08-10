@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using ExpenseAI.Application.Common;
 using ExpenseAI.Application.Interfaces;
+using ExpenseAI.Application.Queries.Expenses.DTOs;
 using ExpenseAI.Domain.Entities;
 
 namespace ExpenseAI.Application.Queries.Expenses.GetExpenseById;

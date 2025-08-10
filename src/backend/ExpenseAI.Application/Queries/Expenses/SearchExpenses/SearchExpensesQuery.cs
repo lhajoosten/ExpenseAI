@@ -13,4 +13,4 @@ public record SearchExpensesQuery(
     DateTimeOffset? EndDate = null,
     int Skip = 0,
     int Take = 50
-) : IQuery<PagedResult<ExpenseDto>>;
+) : IQuery<Common.PagedResult<ExpenseDto>>;

@@ -10,10 +10,12 @@ namespace ExpenseAI.Application.Commands.Budgets.DeleteBudget;
 public class DeleteBudgetHandler : ICommandHandler<DeleteBudgetCommand, bool>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUserService _currentUserService;
 
-    public DeleteBudgetHandler(IUnitOfWork unitOfWork)
+    public DeleteBudgetHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
     {
         _unitOfWork = unitOfWork;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Result<bool>> Handle(DeleteBudgetCommand request, CancellationToken cancellationToken)
@@ -26,7 +28,7 @@ public class DeleteBudgetHandler : ICommandHandler<DeleteBudgetCommand, bool>
                 return Result.Error("Budget not found");
             }
 
-            if (budget.UserId != request.UserId.ToString())
+                    if (budget.UserId != _currentUserService.UserId)
             {
                 return Result.Error("Unauthorized access to budget");
             }

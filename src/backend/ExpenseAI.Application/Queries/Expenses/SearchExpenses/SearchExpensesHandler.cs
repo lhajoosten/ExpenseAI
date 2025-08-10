@@ -6,7 +6,7 @@ using ExpenseAI.Domain.Entities;
 
 namespace ExpenseAI.Application.Queries.Expenses.SearchExpenses;
 
-public class SearchExpensesHandler : IQueryHandler<SearchExpensesQuery, PagedResult<ExpenseDto>>
+public class SearchExpensesHandler : IQueryHandler<SearchExpensesQuery, Common.PagedResult<ExpenseDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -15,7 +15,7 @@ public class SearchExpensesHandler : IQueryHandler<SearchExpensesQuery, PagedRes
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<PagedResult<ExpenseDto>>> Handle(SearchExpensesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Common.PagedResult<ExpenseDto>>> Handle(SearchExpensesQuery request, CancellationToken cancellationToken)
     {
         var expenses = await _unitOfWork.Expenses.SearchAsync(
             request.UserId,
@@ -44,12 +44,12 @@ public class SearchExpensesHandler : IQueryHandler<SearchExpensesQuery, PagedRes
             int.MaxValue,
             cancellationToken);
 
-        var result = new PagedResult<ExpenseDto>
+        var result = new Common.PagedResult<ExpenseDto>
         {
             Items = dtos,
             TotalCount = allExpenses.Count,
             PageSize = request.Take,
-            PageNumber = (request.Skip / request.Take) + 1
+            Page = (request.Skip / request.Take) + 1
         };
 
         return Result.Success(result);

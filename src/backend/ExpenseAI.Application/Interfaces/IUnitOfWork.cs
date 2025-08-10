@@ -31,6 +31,11 @@ public interface IUnitOfWork : IDisposable
     IUserRepository Users { get; }
 
     /// <summary>
+    /// User session repository
+    /// </summary>
+    IUserSessionRepository UserSessions { get; }
+
+    /// <summary>
     /// Save all changes asynchronously
     /// </summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

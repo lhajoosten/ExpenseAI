@@ -106,6 +106,92 @@ public class EmailService : IEmailService
 </body>
 </html>";
     }
+
+    /// <summary>
+    /// Send email confirmation email
+    /// </summary>
+    public async Task<Ardalis.Result.Result> SendEmailConfirmationAsync(string email, string token, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subject = "Please confirm your email address";
+            var body = $@"
+                <html>
+                <body>
+                    <h2>Welcome to ExpenseAI!</h2>
+                    <p>Please confirm your email address by clicking the link below:</p>
+                    <a href='#'>Confirm Email</a>
+                    <p>Token: {token}</p>
+                    <p>If you did not create this account, please ignore this email.</p>
+                </body>
+                </html>";
+
+            await SendEmailAsync(email, subject, body, true, cancellationToken);
+            return Ardalis.Result.Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Ardalis.Result.Result.Error($"Failed to send email confirmation: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Send password reset email
+    /// </summary>
+    public async Task<Ardalis.Result.Result> SendPasswordResetEmailAsync(string email, string token, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subject = "Password Reset Request";
+            var body = $@"
+                <html>
+                <body>
+                    <h2>Password Reset Request</h2>
+                    <p>You requested a password reset. Use the token below:</p>
+                    <p><strong>Reset Token: {token}</strong></p>
+                    <p>If you did not request this, please ignore this email.</p>
+                </body>
+                </html>";
+
+            await SendEmailAsync(email, subject, body, true, cancellationToken);
+            return Ardalis.Result.Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Ardalis.Result.Result.Error($"Failed to send password reset email: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Send invoice email
+    /// </summary>
+    public async Task<Ardalis.Result.Result> SendInvoiceAsync(Domain.Entities.Invoice invoice, string? customMessage = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subject = $"Invoice {invoice.InvoiceNumber}";
+            var message = customMessage ?? "Please find your invoice attached.";
+
+            var body = $@"
+                <html>
+                <body>
+                    <h2>Invoice {invoice.InvoiceNumber}</h2>
+                    <p>Dear Client,</p>
+                    <p>{message}</p>
+                    <p><strong>Amount Due: {invoice.TotalAmount.Amount} {invoice.TotalAmount.Currency}</strong></p>
+                    <p>Due Date: {invoice.DueDate:yyyy-MM-dd}</p>
+                    <p>Thank you for your business!</p>
+                </body>
+                </html>";
+
+            await SendEmailAsync(invoice.ClientEmail, subject, body, true, cancellationToken);
+            return Ardalis.Result.Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Ardalis.Result.Result.Error($"Failed to send invoice: {ex.Message}");
+        }
+    }
 }
 
 public class EmailSettings

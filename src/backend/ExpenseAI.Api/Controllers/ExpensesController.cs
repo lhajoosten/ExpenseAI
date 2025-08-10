@@ -5,7 +5,12 @@ using ExpenseAI.Application.Commands.Expenses.CreateExpense;
 using ExpenseAI.Application.Commands.Expenses.UpdateExpense;
 using ExpenseAI.Application.Commands.Expenses.DeleteExpense;
 using ExpenseAI.Application.Commands.Expenses.UploadReceipt;
-using ExpenseAI.Application.Queries.Expenses;
+using ExpenseAI.Application.Queries.Expenses.GetExpenseById;
+using ExpenseAI.Application.Queries.Expenses.GetExpensesByUser;
+using ExpenseAI.Application.Queries.Expenses.SearchExpenses;
+using ExpenseAI.Application.Queries.Expenses.GetExpenseStats;
+using ExpenseAI.Application.Queries.Expenses.DTOs;
+using ExpenseAI.Application.Common;
 
 namespace ExpenseAI.Api.Controllers;
 

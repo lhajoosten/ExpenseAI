@@ -17,6 +17,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         Invoices = new InvoiceRepository(_context);
         Budgets = new BudgetRepository(_context);
         Users = new UserRepository(_context);
+        UserSessions = new UserSessionRepository(_context);
     }
 
     public IExpenseRepository Expenses { get; }
@@ -24,6 +25,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IInvoiceRepository Invoices { get; }
     public IBudgetRepository Budgets { get; }
     public IUserRepository Users { get; }
+    public IUserSessionRepository UserSessions { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

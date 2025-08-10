@@ -274,4 +274,21 @@ public class ExpenseRepository : BaseRepository<Expense>, IExpenseRepository
             .OrderByDescending(e => e.ExpenseDate)
             .ToListAsync(cancellationToken);
     }
+
+    /// <summary>
+    /// Get expenses by date range
+    /// </summary>
+    public async Task<IReadOnlyList<Expense>> GetExpensesByDateRangeAsync(
+        Guid userId,
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(e => e.UserId == userId &&
+                       e.ExpenseDate >= startDate &&
+                       e.ExpenseDate <= endDate)
+            .OrderBy(e => e.ExpenseDate)
+            .ToListAsync(cancellationToken);
+    }
 }

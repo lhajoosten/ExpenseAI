@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ExpenseAI.Domain.Entities;
 using ExpenseAI.Domain.ValueObjects;
@@ -9,7 +10,7 @@ namespace ExpenseAI.Infrastructure.Data;
 /// <summary>
 /// Application database context
 /// </summary>
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+public class ApplicationDbContext : IdentityDbContext<ExpenseAIIdentityUser, IdentityRole<Guid>, Guid>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
@@ -25,8 +26,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(builder);
 
-        // Configure ApplicationUser
-        builder.Entity<ApplicationUser>(entity =>
+        // Configure ExpenseAIIdentityUser
+        builder.Entity<ExpenseAIIdentityUser>(entity =>
         {
             entity.ToTable("AspNetUsers");
             entity.Property(e => e.FirstName).HasMaxLength(50).IsRequired();
@@ -244,7 +245,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         foreach (var entry in entries)
         {
-            if (entry.Entity is ApplicationUser user)
+            if (entry.Entity is ExpenseAIIdentityUser user)
             {
                 if (entry.State == EntityState.Added)
                     user.CreatedAt = DateTime.UtcNow;
