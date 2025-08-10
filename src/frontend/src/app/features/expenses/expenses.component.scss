@@ -1,0 +1,196 @@
+.expenses-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0;
+    color: #333;
+    font-size: 2rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+.filters-card {
+  margin-bottom: 2rem;
+
+  .filters-form {
+    .filter-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+
+      mat-form-field {
+        min-width: 200px;
+        flex: 1;
+      }
+
+      button {
+        height: fit-content;
+        margin-top: 8px;
+      }
+    }
+  }
+}
+
+.results-card {
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+
+    p {
+      margin-top: 1rem;
+      color: #666;
+    }
+  }
+
+  .results-content {
+    .summary-stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+
+        .stat-label {
+          font-size: 0.875rem;
+          color: #666;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #333;
+        }
+      }
+    }
+
+    .expenses-table {
+      width: 100%;
+      margin-bottom: 1rem;
+
+      .description-cell {
+        .expense-description {
+          display: block;
+          font-weight: 500;
+          margin-bottom: 0.25rem;
+        }
+
+        .tags-container {
+          mat-chip-set {
+            mat-chip {
+              font-size: 0.75rem;
+              height: 24px;
+            }
+          }
+        }
+      }
+
+      .category-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .category-name {
+          font-weight: 500;
+        }
+
+        .subcategory-name {
+          font-size: 0.875rem;
+          color: #666;
+        }
+
+        .ai-icon {
+          font-size: 1.2rem;
+          width: 1.2rem;
+          height: 1.2rem;
+        }
+      }
+
+      .expense-amount {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .delete-action {
+        color: #f44336;
+      }
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+
+    .header-actions {
+      justify-content: center;
+    }
+  }
+
+  .filters-card {
+    .filters-form {
+      .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+
+        mat-form-field {
+          min-width: auto;
+        }
+      }
+    }
+  }
+
+  .results-card {
+    .results-content {
+      .summary-stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .expenses-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .expenses-container {
+    padding: 0.5rem;
+  }
+
+  .header-section {
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+}

@@ -1,0 +1,195 @@
+    <div class="expenses-container">
+      <!-- Header Section -->
+      <div class="header-section">
+        <h1>Expense Management</h1>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" (click)="openAddExpenseDialog()">
+            <mat-icon>add</mat-icon>
+            Add Expense
+          </button>
+          <button mat-button [matMenuTriggerFor]="exportMenu">
+            <mat-icon>download</mat-icon>
+            Export
+          </button>
+          <mat-menu #exportMenu="matMenu">
+            <button mat-menu-item (click)="exportExpenses('csv')">
+              <mat-icon>description</mat-icon>
+              Export CSV
+            </button>
+            <button mat-menu-item (click)="exportExpenses('excel')">
+              <mat-icon>table_chart</mat-icon>
+              Export Excel
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <mat-card class="filters-card">
+        <mat-card-header>
+          <mat-card-title>Filters</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="filtersForm" class="filters-form">
+            <div class="filter-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Search</mat-label>
+                <input matInput formControlName="searchTerm" placeholder="Search expenses...">
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Category</mat-label>
+                <mat-select formControlName="categoryFilter">
+                  <mat-option value="">All Categories</mat-option>
+                  <mat-option *ngFor="let category of categories$ | async" [value]="category.name">
+                    {{ category.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Date Range Start</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Date Range End</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <div class="filter-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Min Amount</mat-label>
+                <input matInput type="number" formControlName="minAmount" min="0">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Max Amount</mat-label>
+                <input matInput type="number" formControlName="maxAmount" min="0">
+              </mat-form-field>
+
+              <button mat-button type="button" (click)="clearFilters()">
+                <mat-icon>clear</mat-icon>
+                Clear Filters
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Results Section -->
+      <mat-card class="results-card">
+        <mat-card-content>
+          <div *ngIf="loading$ | async" class="loading-container">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p>Loading expenses...</p>
+          </div>
+
+          <div *ngIf="!(loading$ | async)" class="results-content">
+            <!-- Summary Statistics -->
+            <div class="summary-stats">
+              <div class="stat-item">
+                <span class="stat-label">Total Expenses:</span>
+                <span class="stat-value">{{ (expenseData$ | async)?.totalCount || 0 }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Total Amount:</span>
+                <span class="stat-value">{{ getTotalAmount() | currency }}</span>
+              </div>
+            </div>
+
+            <!-- Expenses Table -->
+            <table mat-table [dataSource]="(expenses$ | async) || []" class="expenses-table">
+              <!-- Date Column -->
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Date</th>
+                <td mat-cell *matCellDef="let expense">{{ expense.dateIncurred | date:'shortDate' }}</td>
+              </ng-container>
+
+              <!-- Description Column -->
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef>Description</th>
+                <td mat-cell *matCellDef="let expense">
+                  <div class="description-cell">
+                    <span class="expense-description">{{ expense.description }}</span>
+                    <div *ngIf="expense.tags.length > 0" class="tags-container">
+                      <mat-chip-set>
+                        <mat-chip *ngFor="let tag of expense.tags">{{ tag }}</mat-chip>
+                      </mat-chip-set>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Category Column -->
+              <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef>Category</th>
+                <td mat-cell *matCellDef="let expense">
+                  <div class="category-cell">
+                    <span class="category-name">{{ expense.category }}</span>
+                    <span *ngIf="expense.subcategory" class="subcategory-name">{{ expense.subcategory }}</span>
+                    <mat-icon *ngIf="expense.aiCategorized" class="ai-icon"
+                             title="AI Categorized" color="accent">psychology</mat-icon>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Amount Column -->
+              <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef>Amount</th>
+                <td mat-cell *matCellDef="let expense">
+                  <span class="expense-amount">{{ expense.amount | currency:expense.currency }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let expense">
+                  <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #actionMenu="matMenu">
+                    <button mat-menu-item (click)="editExpense(expense)">
+                      <mat-icon>edit</mat-icon>
+                      Edit
+                    </button>
+                    <button mat-menu-item (click)="categorizeExpense(expense)"
+                            [disabled]="expense.aiCategorized">
+                      <mat-icon>psychology</mat-icon>
+                      AI Categorize
+                    </button>
+                    <button mat-menu-item *ngIf="expense.receiptUrl" (click)="viewReceipt(expense)">
+                      <mat-icon>receipt</mat-icon>
+                      View Receipt
+                    </button>
+                    <button mat-menu-item (click)="deleteExpense(expense)" class="delete-action">
+                      <mat-icon>delete</mat-icon>
+                      Delete
+                    </button>
+                  </mat-menu>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+
+            <!-- Pagination -->
+            <mat-paginator
+              [length]="(expenseData$ | async)?.totalCount || 0"
+              [pageSize]="pageSize"
+              [pageSizeOptions]="[10, 25, 50, 100]"
+              (page)="onPageChange($event)"
+              showFirstLastButtons>
+            </mat-paginator>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>

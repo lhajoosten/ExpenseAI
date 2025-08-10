@@ -55,14 +55,30 @@ applyTo: "**"
 - TestContainers for database testing
 - High code coverage standards
 
-## Code Quality
+## Code Quality & Organization
 - SOLID principles, meaningful naming conventions
+- **Single Responsibility Principle**: One class/file per responsibility
+- **Separation of Concerns**: Split large files into focused, smaller files
 - PascalCase C#, camelCase TypeScript
 - Nullable reference types in C#
 - Structured logging with Serilog
 - IOptions<T> for configuration
 - Extension methods for common operations
 - Proper disposal patterns (using statements)
+
+## File Organization Standards
+### Frontend
+- **Component Files**: Separate .html template, .ts logic, .scss styles
+- **Service Files**: One service per file, focused responsibility
+- **Model Files**: One interface/class per file
+- **Feature Modules**: Organized by business domain
+
+### Backend
+- **DTOs**: One DTO per file in dedicated folders
+- **Repository Interfaces**: One interface per aggregate root
+- **Command/Query Classes**: One per file with focused purpose
+- **Validators**: One validator per command/query
+- **Controllers**: Focused on single aggregate or bounded context
 
 ## Performance & DevOps
 - Response compression (Gzip, Brotli)

@@ -1,0 +1,103 @@
+ <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <div class="period-selector">
+          <mat-form-field appearance="outline">
+            <mat-label>Time Period</mat-label>
+            <mat-select [formControl]="periodControl" (selectionChange)="onPeriodChange()">
+              <mat-option value="week">This Week</mat-option>
+              <mat-option value="month">This Month</mat-option>
+              <mat-option value="quarter">This Quarter</mat-option>
+              <mat-option value="year">This Year</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div *ngIf="loading$ | async" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading dashboard data...</p>
+      </div>
+
+      <div *ngIf="!(loading$ | async)" class="dashboard-content">
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+          <mat-card class="stat-card total-expenses">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>attach_money</mat-icon>
+              </div>
+              <div class="stat-content">
+                <h3>Total Expenses</h3>
+                <p class="stat-value">{{ (stats$ | async)?.totalAmount | currency }}</p>
+                <p class="stat-change" [ngClass]="getChangeClass((stats$ | async)?.monthlyGrowth || 0)">
+                  {{ formatGrowth((stats$ | async)?.monthlyGrowth || 0) }}
+                </p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="stat-card total-count">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>receipt</mat-icon>
+              </div>
+              <div class="stat-content">
+                <h3>Total Count</h3>
+                <p class="stat-value">{{ (stats$ | async)?.totalExpenses || 0 }}</p>
+                <p class="stat-change">Expenses tracked</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="stat-card average-expense">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>trending_up</mat-icon>
+              </div>
+              <div class="stat-content">
+                <h3>Average Expense</h3>
+                <p class="stat-value">{{ (stats$ | async)?.averageExpense | currency }}</p>
+                <p class="stat-change">Per transaction</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="stat-card ai-categorized">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>psychology</mat-icon>
+              </div>
+              <div class="stat-content">
+                <h3>AI Categorized</h3>
+                <p class="stat-value">85%</p>
+                <p class="stat-change positive">Smart automation</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="actions-section">
+          <h2>Quick Actions</h2>
+          <div class="action-buttons">
+            <button mat-raised-button color="primary" routerLink="/expenses">
+              <mat-icon>add</mat-icon>
+              Add Expense
+            </button>
+            <button mat-raised-button color="accent" routerLink="/analytics">
+              <mat-icon>analytics</mat-icon>
+              View Analytics
+            </button>
+            <button mat-stroked-button routerLink="/ai-chat">
+              <mat-icon>chat</mat-icon>
+              AI Assistant
+            </button>
+            <button mat-stroked-button (click)="exportReport()">
+              <mat-icon>download</mat-icon>
+              Export Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>

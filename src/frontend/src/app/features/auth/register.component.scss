@@ -1,0 +1,163 @@
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  .register-card {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: white;
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 20px;
+
+      .app-icon {
+        font-size: 3rem;
+        width: 3rem;
+        height: 3rem;
+        color: #667eea;
+        margin-bottom: 16px;
+      }
+
+      h1 {
+        margin: 0 0 8px 0;
+        font-size: 2rem;
+        font-weight: 600;
+        color: #333;
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+      }
+    }
+
+    .register-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .name-row {
+        display: flex;
+        gap: 12px;
+
+        .half-width {
+          flex: 1;
+        }
+      }
+
+      .full-width {
+        width: 100%;
+      }
+
+      .register-button {
+        height: 48px;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-top: 16px;
+        border-radius: 8px;
+
+        .loading-content {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          span {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+
+    .card-actions {
+      padding: 16px 0 0 0;
+      justify-content: center;
+
+      .login-prompt {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+
+        span {
+          color: #666;
+        }
+      }
+    }
+  }
+}
+
+// Form field customizations
+::ng-deep {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      border-radius: 8px;
+    }
+  }
+
+  .mat-mdc-raised-button {
+    border-radius: 8px;
+  }
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .register-container {
+    padding: 16px;
+
+    .register-card {
+      padding: 16px;
+
+      .register-header {
+        .app-icon {
+          font-size: 2.5rem;
+          width: 2.5rem;
+          height: 2.5rem;
+        }
+
+        h1 {
+          font-size: 1.75rem;
+        }
+      }
+
+      .register-form {
+        gap: 12px;
+
+        .name-row {
+          flex-direction: column;
+          gap: 12px;
+        }
+      }
+    }
+  }
+}
+
+// Dark theme support
+@media (prefers-color-scheme: dark) {
+  .register-container {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+
+    .register-card {
+      background: #2d3748;
+      color: white;
+
+      .register-header {
+        h1 {
+          color: white;
+        }
+
+        p {
+          color: #a0aec0;
+        }
+      }
+    }
+  }
+}
