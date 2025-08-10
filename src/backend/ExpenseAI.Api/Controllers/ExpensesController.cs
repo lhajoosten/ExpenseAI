@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MediatR;
-using ExpenseAI.Application.Commands.Expenses;
+using ExpenseAI.Application.Commands.Expenses.CreateExpense;
+using ExpenseAI.Application.Commands.Expenses.UpdateExpense;
+using ExpenseAI.Application.Commands.Expenses.DeleteExpense;
+using ExpenseAI.Application.Commands.Expenses.UploadReceipt;
 using ExpenseAI.Application.Queries.Expenses;
 
 namespace ExpenseAI.Api.Controllers;

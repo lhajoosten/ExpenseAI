@@ -27,6 +27,14 @@ public interface IBudgetRepository : IBaseRepository<Budget>
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Get budget by user and category
+    /// </summary>
+    Task<Budget?> GetByUserAndCategoryAsync(
+        Guid userId,
+        string category,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Get budgets by period
     /// </summary>
     Task<IReadOnlyList<Budget>> GetByPeriodAsync(

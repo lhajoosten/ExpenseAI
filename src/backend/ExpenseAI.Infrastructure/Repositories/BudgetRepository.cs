@@ -55,6 +55,19 @@ public class BudgetRepository : BaseRepository<Budget>, IBudgetRepository
     }
 
     /// <summary>
+    /// Get budget by user and category
+    /// </summary>
+    public async Task<Budget?> GetByUserAndCategoryAsync(
+        Guid userId,
+        string category,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = userId.ToString();
+        return await _dbSet
+            .FirstOrDefaultAsync(b => b.UserId == userIdString && b.Category == category, cancellationToken);
+    }
+
+    /// <summary>
     /// Get budgets by period
     /// </summary>
     public async Task<IReadOnlyList<Budget>> GetByPeriodAsync(

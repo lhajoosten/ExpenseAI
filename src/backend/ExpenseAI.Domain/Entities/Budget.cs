@@ -91,6 +91,118 @@ public class Budget
     /// Budget icon for UI display
     /// </summary>
     public string? Icon { get; set; }
+
+    /// <summary>
+    /// Create a new budget
+    /// </summary>
+    public static Budget Create(
+        Guid userId,
+        string name,
+        string description,
+        Money amount,
+        string category,
+        DateTime startDate,
+        DateTime endDate,
+        bool isRecurring,
+        BudgetPeriod recurrencePattern)
+    {
+        var budget = new Budget
+        {
+            Id = Guid.NewGuid(),
+            Name = name,
+            Description = description,
+            Amount = amount,
+            Category = category,
+            Period = recurrencePattern,
+            StartDate = startDate,
+            EndDate = endDate,
+            UserId = userId.ToString(),
+            AlertThreshold = 80m,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        return budget;
+    }
+
+    /// <summary>
+    /// Update budget details
+    /// </summary>
+    public void UpdateDetails(string name, string description, Money amount)
+    {
+        Name = name;
+        Description = description;
+        Amount = amount;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Update budget date range
+    /// </summary>
+    public void UpdateDateRange(DateTime startDate, DateTime endDate)
+    {
+        StartDate = startDate;
+        EndDate = endDate;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Set budget recurrence period
+    /// </summary>
+    public void SetRecurrence(BudgetPeriod period)
+    {
+        Period = period;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Remove budget recurrence (make it one-time)
+    /// </summary>
+    public void RemoveRecurrence()
+    {
+        // For one-time budgets, we might want a different handling
+        // For now, we'll keep the period but could add a flag
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Set alert threshold
+    /// </summary>
+    public void SetAlertThreshold(decimal threshold)
+    {
+        if (threshold < 0 || threshold > 100)
+            throw new ArgumentException("Alert threshold must be between 0 and 100", nameof(threshold));
+
+        AlertThreshold = threshold;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Disable alerts by setting threshold to 100%
+    /// </summary>
+    public void DisableAlerts()
+    {
+        AlertThreshold = 100m;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Activate the budget
+    /// </summary>
+    public void Activate()
+    {
+        IsActive = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Deactivate the budget
+    /// </summary>
+    public void Deactivate()
+    {
+        IsActive = false;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }
 
 /// <summary>

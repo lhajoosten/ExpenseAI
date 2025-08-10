@@ -3,8 +3,11 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using ExpenseAI.Application.Behaviors;
-using ExpenseAI.Application.Validators.Expenses;
 using ExpenseAI.Application.Validators.Auth;
+using ExpenseAI.Application.Commands.Expenses.CreateExpense;
+using ExpenseAI.Application.Commands.Expenses.UpdateExpense;
+using ExpenseAI.Application.Commands.Expenses.DeleteExpense;
+using ExpenseAI.Application.Commands.Expenses.UploadReceipt;
 
 namespace ExpenseAI.Application;
 
@@ -18,10 +21,10 @@ public static class ServiceRegistration
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
 
         // Add FluentValidation validators - Expenses
-        services.AddScoped<IValidator<Commands.Expenses.CreateExpenseCommand>, CreateExpenseCommandValidator>();
-        services.AddScoped<IValidator<Commands.Expenses.UpdateExpenseCommand>, UpdateExpenseCommandValidator>();
-        services.AddScoped<IValidator<Commands.Expenses.DeleteExpenseCommand>, DeleteExpenseCommandValidator>();
-        services.AddScoped<IValidator<Commands.Expenses.UploadReceiptCommand>, UploadReceiptCommandValidator>();
+        services.AddScoped<IValidator<CreateExpenseCommand>, CreateExpenseValidator>();
+        services.AddScoped<IValidator<UpdateExpenseCommand>, UpdateExpenseValidator>();
+        services.AddScoped<IValidator<DeleteExpenseCommand>, DeleteExpenseValidator>();
+        services.AddScoped<IValidator<UploadReceiptCommand>, UploadReceiptValidator>();
 
         // Add FluentValidation validators - Auth
         services.AddScoped<IValidator<DTOs.Auth.LoginRequestDto>, LoginRequestDtoValidator>();

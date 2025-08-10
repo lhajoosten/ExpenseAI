@@ -11,8 +11,42 @@ applyTo: "**"
 - Clean Architecture: separate API/Application/Domain/Infrastructure layers
 - Domain-Driven Design: Aggregates, Value Objects, Domain Services
 - CQRS with MediatR for command/query separation
+- Vertical Slice Architecture for CQRS organization
 - Repository and Specification patterns for data access
 - Dependency injection with proper service lifetimes
+
+## CQRS Organization (Vertical Slice Architecture)
+### Commands Structure:
+```
+Commands/
+├─ Feature/
+│  ├─ Create<Feature>/
+│  │  ├─ Create<Feature>Command.cs
+│  │  ├─ Create<Feature>Handler.cs
+│  │  ├─ Create<Feature>Validator.cs
+│  ├─ Update<Feature>/
+│  ├─ Delete<Feature>/
+│  ├─ <Feature>Authorizer/ (for data authorization checks)
+```
+
+### Queries Structure:
+```
+Queries/
+├─ Feature/
+│  ├─ Get<Feature>/
+│  │  ├─ Get<Feature>Query.cs
+│  │  ├─ Get<Feature>Handler.cs
+│  │  ├─ Get<Feature>Validator.cs (if necessary)
+│  │  ├─ Get<Feature>DTO.cs (action-specific DTO)
+│  ├─ ListAll<Features>/
+│  ├─ DTOs/ (feature-shared DTOs)
+```
+
+### Guidelines:
+- **Single Responsibility**: Each folder handles one specific action/operation
+- **Co-location**: Everything related to one action is in the same folder
+- **Authorization**: Use <Feature>Authorizer for data-level security checks
+- **DTOs**: Action-specific DTOs in action folders, shared DTOs in feature DTOs folder
 
 ## Backend (.NET/C#)
 - Use async/await with ConfigureAwait(false) in libraries
